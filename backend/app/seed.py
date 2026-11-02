@@ -7,7 +7,7 @@ import random
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 
-from sqlalchemy import select
+from sqlalchemy import select, text
 
 from app.db import Base, SessionLocal, engine
 from app.models import (
@@ -48,6 +48,8 @@ def seed(days: int = 60) -> None:
     Base.metadata.create_all(engine)
     rng = random.Random(2026)
     with SessionLocal() as db:
+        # Serverless cold starts can run this at the same time; one seeds, the rest wait and skip.
+        db.execute(text("SELECT pg_advisory_xact_lock(20261102)"))
         if db.scalar(select(User).where(User.email == DEMO_EMAIL)):
             print("Demo shop already exists")
             return

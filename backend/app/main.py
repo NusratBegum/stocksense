@@ -1,3 +1,4 @@
+import logging
 import os
 from contextlib import asynccontextmanager
 
@@ -17,7 +18,11 @@ async def lifespan(_: FastAPI):
     if os.getenv("SEED_DEMO") == "1":
         from app.seed import seed
 
-        seed()
+        try:
+            seed()
+        except Exception:
+            # A failed seed must not take the API down; the next cold start retries.
+            logging.getLogger("stocksense").exception("Demo seed failed")
     yield
 
 
