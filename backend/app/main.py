@@ -1,3 +1,6 @@
+import os
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
@@ -6,7 +9,20 @@ from app.config import CORS_ORIGINS
 from app.db import engine
 from app.routers import analytics, auth, inventory, orders, products
 
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    # The hosted demo creates its tables and demo shop on first start.
+    if os.getenv("SEED_DEMO") == "1":
+        from app.seed import seed
+
+        seed()
+    yield
+
+
 app = FastAPI(
+    lifespan=lifespan,
     title="StockSense API",
     version="1.0.0",
     description="Inventory and multi-channel order tracking for small online shops.",
