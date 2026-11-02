@@ -4,8 +4,34 @@
 One stock ledger across Shopee, Lazada, LINE, Facebook and a physical store, so a seller never sells stock they don't have and can see which channel actually makes money.
 
 [![CI](https://github.com/NusratBegum/stocksense/actions/workflows/ci.yml/badge.svg)](https://github.com/NusratBegum/stocksense/actions/workflows/ci.yml)
+![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)
+![React 18](https://img.shields.io/badge/React_18-20232A?logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
 
-**Live dashboard:** https://stocksense-demo-mauve.vercel.app · **API docs:** https://stocksense-api-nine.vercel.app/docs · **Demo login:** `demo@stocksense.dev` / `demo-shop-2026`
+**[Open the live dashboard](https://stocksense-demo-mauve.vercel.app)** · [API docs (Swagger)](https://stocksense-api-nine.vercel.app/docs) · Demo login: `demo@stocksense.dev` / `demo-shop-2026`
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/dashboard-dark.png">
+  <img alt="StockSense dashboard: revenue, profit and order KPIs, a daily revenue chart, sales by channel, a new-order form and the product list with low-stock badges" src="docs/dashboard-light.png">
+</picture>
+
+### Try it in 30 seconds
+
+1. Open the [live dashboard](https://stocksense-demo-mauve.vercel.app) and press **Sign in** (the demo account is filled in).
+2. In **New order**, pick a product marked **Low** and ask for more than is in stock. The API refuses with `409 Not enough stock`.
+3. Order an amount that fits. Stock drops, the order appears under **Recent orders**, and revenue updates.
+4. Press **+20** on a product to record a purchase, or cancel an order to put its stock back.
+
+## How it works
+
+```mermaid
+flowchart LR
+  UI["React + TypeScript dashboard<br/>(Vite, Vercel)"] -- "JWT, JSON" --> API["FastAPI<br/>(Vercel Python function)"]
+  API -- "SQLAlchemy 2.0<br/>SELECT ... FOR UPDATE" --> DB[("PostgreSQL<br/>(Neon)")]
+  CI["GitHub Actions"] -- "pytest on Postgres 16" --> API
+```
 
 ## What it does
 
@@ -20,6 +46,7 @@ One stock ledger across Shopee, Lazada, LINE, Facebook and a physical store, so 
 
 | Layer | Tech |
 |---|---|
+| Dashboard | React 18, TypeScript, Vite, plain CSS with light and dark themes, SVG chart |
 | API | FastAPI, Pydantic v2, SQLAlchemy 2.0, OAuth2 + JWT, bcrypt |
 | Database | PostgreSQL (Neon in production) |
 | Tests | pytest against a real PostgreSQL, GitHub Actions |
@@ -50,6 +77,14 @@ python -m app.seed              # tables + a demo shop with 60 days of orders
 uvicorn app.main:app --reload   # http://localhost:8000/docs
 ```
 
+In a second terminal, start the dashboard:
+
+```bash
+cd frontend
+npm ci
+VITE_API_URL=http://localhost:8000 npm run dev   # http://localhost:5173
+```
+
 Tests need an empty PostgreSQL database:
 
 ```bash
@@ -68,6 +103,12 @@ backend/
     routers/         auth, products, inventory, orders, analytics
     seed.py          demo shop with 60 days of orders
   tests/test_api.py  13 API tests on PostgreSQL
+frontend/
+  src/
+    App.tsx          dashboard: KPIs, chart, channels, orders, products
+    RevenueChart.tsx SVG bar chart with hover tooltips
+    api.ts           typed API client (JWT, Idempotency-Key)
+docs/                screenshots
 ```
 
 ## Author
