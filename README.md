@@ -5,7 +5,7 @@ One stock ledger across Shopee, Lazada, LINE, Facebook and a physical store, so 
 
 [![CI](https://github.com/NusratBegum/stocksense/actions/workflows/ci.yml/badge.svg)](https://github.com/NusratBegum/stocksense/actions/workflows/ci.yml)
 
-**Live API docs:** https://stocksense-api.vercel.app/docs · **Demo login:** `demo@stocksense.dev` / `demo-shop-2026`
+**Live dashboard:** https://stocksense-demo-mauve.vercel.app · **API docs:** https://stocksense-api-nine.vercel.app/docs · **Demo login:** `demo@stocksense.dev` / `demo-shop-2026`
 
 ## What it does
 
